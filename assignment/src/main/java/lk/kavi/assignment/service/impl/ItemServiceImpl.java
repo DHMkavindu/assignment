@@ -1,6 +1,7 @@
 package lk.kavi.assignment.service.impl;
 
 import lk.kavi.assignment.dto.ItemPriceDTO;
+import lk.kavi.assignment.dto.priceDTO;
 import lk.kavi.assignment.model.Item;
 import lk.kavi.assignment.repository.ItemRepository;
 import lk.kavi.assignment.service.ItemService;
@@ -30,8 +31,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Double itemLastPrice(String item_desc, Integer qty, String unitOrCatron) {
-        Double returnValue = ItemPriceCalculation(item_desc, qty, unitOrCatron);
+    public priceDTO itemLastPrice(String item_desc, Integer qty, String unitOrCatron) {
+        priceDTO returnValue = ItemPriceCalculation(item_desc, qty, unitOrCatron);
         return returnValue;
     }
 
@@ -44,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
             HashMap<Integer, Double> priceList = new HashMap<>();
             ItemPriceDTO priceDTO = new ItemPriceDTO();
             double unitPrice = 0;
-            unitPrice = Double.valueOf((itemList.get(i).getCarton_price() * 30 / 100) + itemList.get(i).getCarton_price()) / itemList.get(i).getUnit_fr_carton();
+            unitPrice = Double.valueOf((itemList.get(i).getCarton_price() * 30) / 100 + itemList.get(i).getCarton_price()) / itemList.get(i).getUnit_fr_carton();
             for (int j = 1; j <= 5; j++) {
                 priceList.put(j, unitPrice * j);
             }
@@ -57,7 +58,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     //    Calculation Unit price and Carton price  : Return final value for order que...(Double)
-    private Double ItemPriceCalculation(String item_desc, Integer qty, String unitOrCatron) {
+    private priceDTO ItemPriceCalculation(String item_desc, Integer qty, String unitOrCatron) {
+        priceDTO priceDTO = new priceDTO();
         Double unitPrice = 0.0;
         Double finalPrice = 0.0;
         if (item_desc == null || qty == null) {
@@ -69,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
         }
         if (qty != null) {
             if (unitOrCatron.equals("U")) {
-                unitPrice = Double.valueOf((item.getCarton_price() * 30 / 100) + item.getCarton_price()) / item.getUnit_fr_carton();
+                unitPrice = Double.valueOf((item.getCarton_price() * 30) / 100 + item.getCarton_price()) / item.getUnit_fr_carton();
                 if (qty < item.getUnit_fr_carton()) {
                     finalPrice = unitPrice * qty;
                 } else {
@@ -81,12 +83,14 @@ public class ItemServiceImpl implements ItemService {
                 }
             } else if (unitOrCatron.equals("C")) {
                 if (qty >= 3) {
-                    finalPrice = Double.valueOf((item.getCarton_price() - (item.getCarton_price() * 10 / 100)) * qty);
+                    Double discountValue = Double.valueOf(item.getCarton_price() * 10) / 100;
+                    finalPrice = Double.valueOf((item.getCarton_price() - discountValue) * qty);
                 } else {
                     finalPrice = Double.valueOf(item.getCarton_price() * qty);
                 }
             }
         }
-        return finalPrice;
+        priceDTO.setFinalValue(finalPrice);
+        return priceDTO;
     }
 }
