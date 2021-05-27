@@ -1,11 +1,13 @@
 package lk.kavi.assignment.service.impl;
 
+import lk.kavi.assignment.dto.ItemPriceDTO;
 import lk.kavi.assignment.model.Item;
 import lk.kavi.assignment.repository.ItemRepository;
 import lk.kavi.assignment.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,20 +36,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public HashMap<String, HashMap<Integer, Double>> getPriceList() {
-        HashMap<String, HashMap<Integer, Double>> returnHash = new HashMap<>();
+    public List<ItemPriceDTO> getPriceList() {
+        List<ItemPriceDTO> itemPriceDTO = new ArrayList<>();
         List<Item> itemList = itemRepository.findAll();
 
         for (int i = 0; i < itemList.size(); i++) {
             HashMap<Integer, Double> priceList = new HashMap<>();
+            ItemPriceDTO priceDTO = new ItemPriceDTO();
             double unitPrice = 0;
             unitPrice = Double.valueOf((itemList.get(i).getCarton_price() * 30 / 100) + itemList.get(i).getCarton_price()) / itemList.get(i).getUnit_fr_carton();
-            for (int j = 1; j <= 50; j++) {
+            for (int j = 1; j <= 5; j++) {
                 priceList.put(j, unitPrice * j);
             }
-            returnHash.put(itemList.get(i).getItem_description(), priceList);
+            priceDTO.setDescription(itemList.get(i).getItem_description());
+            priceDTO.setPriceList(priceList);
+            itemPriceDTO.add(priceDTO);
+
         }
-        return returnHash;
+        return itemPriceDTO;
     }
 
     //    Calculation Unit price and Carton price  : Return final value for order que...(Double)

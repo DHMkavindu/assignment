@@ -1,5 +1,6 @@
 package lk.kavi.assignment.service;
 
+import lk.kavi.assignment.dto.ItemPriceDTO;
 import lk.kavi.assignment.model.Item;
 import org.springframework.stereotype.Service;
 
@@ -15,5 +16,5 @@ public interface ItemService {
 
     Double itemLastPrice(String item_desc, Integer qty, String unitOrCatron);
 
-    HashMap<String, HashMap<Integer, Double>> getPriceList();
+    List<ItemPriceDTO> getPriceList();
 }
